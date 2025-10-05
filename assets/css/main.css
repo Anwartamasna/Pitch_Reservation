@@ -1237,6 +1237,20 @@ section,
   }
 }
 
+@media (max-width: 575.98px) {
+  .hero {
+    padding: calc(var(--header-height) + 130px) 0 64px;
+  }
+
+  .hero .hero-img {
+    margin-top: 44px;
+  }
+
+  .hero .hero-img img {
+    max-width: 320px;
+  }
+}
+
 @keyframes up-down {
   0% {
     transform: translateY(10px);
