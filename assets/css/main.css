@@ -95,7 +95,7 @@ h6 {
 }
 
 .header .logo h1 {
-  font-size: 30px;
+  font-size: clamp(20px, 4.5vw, 30px);
   margin: 0;
   font-weight: 700;
   color: var(--heading-color);
@@ -282,7 +282,8 @@ h6 {
   .navmenu ul {
     display: none;
     position: absolute;
-    inset: 60px 20px 20px 20px;
+    inset: 70px 16px 20px 16px;
+    max-height: calc(100vh - 110px);
     padding: 10px 0;
     margin: 0;
     border-radius: 6px;
@@ -855,13 +856,24 @@ section,
 .section-title p {
   color: var(--heading-color);
   margin: 10px 0 0 0;
-  font-size: 32px;
+  font-size: clamp(22px, 4vw, 32px);
+  line-height: 1.35;
   font-weight: 700;
   font-family: var(--heading-font);
 }
 
 .section-title p .description-title {
   color: var(--accent-color);
+}
+
+@media (max-width: 575.98px) {
+  .section-title {
+    padding-bottom: 36px;
+  }
+
+  .section-title h2 {
+    padding: 6px 16px;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -907,9 +919,9 @@ section,
 
 .hero h1 {
   margin: 0;
-  font-size: 48px;
+  font-size: clamp(28px, 5vw, 48px);
   font-weight: 700;
-  line-height: 56px;
+  line-height: clamp(38px, 6vw, 56px);
   color: var(--heading-color);
 }
 
@@ -931,7 +943,8 @@ section,
 .hero p {
   color: color-mix(in srgb, var(--default-color), transparent 20%);
   margin: 5px 0 30px 0;
-  font-size: 20px;
+  font-size: clamp(16px, 3.7vw, 20px);
+  line-height: 1.6;
   font-weight: 400;
 }
 
@@ -1105,10 +1118,15 @@ section,
   .volunteer-card {
     flex-direction: column;
     text-align: center;
+    padding: 26px 22px;
+    gap: 18px;
   }
 
   .volunteer-card .icon-wrap {
     margin: 0 auto;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
   }
 }
 
@@ -1139,16 +1157,54 @@ section,
   animation: up-down 2s ease-in-out infinite alternate-reverse both;
 }
 
+/* Stack hero layout for tablets & phones */
+@media (max-width: 991.98px) {
+  .hero {
+    padding: 110px 0 40px;
+    text-align: center;
+  }
+
+  .hero .container {
+    text-align: center;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero .hero-img {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero .hero-img img {
+    width: 85%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .hero .hero-cta {
+    width: 100%;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .hero .hero-cta .btn-get-started {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
-  .hero h1 {
-    font-size: 28px;
-    line-height: 36px;
+  .hero {
+    padding: 96px 0 36px;
   }
 
   .hero p {
-    font-size: 18px;
-    line-height: 24px;
-    margin-bottom: 30px;
+    font-size: 17px;
+    line-height: 1.55;
+    margin-bottom: 26px;
   }
 }
 
@@ -1630,6 +1686,35 @@ section,
   .portfolio .portfolio-filters li {
     font-size: 14px;
     margin: 0 5px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  section,
+  .section {
+    padding: 48px 0;
+  }
+
+  .about .content {
+    padding: 28px 22px;
+  }
+
+  .skills .card .card-body {
+    padding: 24px 20px;
+  }
+
+  .project-card,
+  .services .service-item,
+  .contact .info-item {
+    padding: 24px 20px;
+  }
+
+  .services .service-item h3 {
+    font-size: 20px;
+  }
+
+  .services .service-item h4 {
+    font-size: 15px;
   }
 }
 
