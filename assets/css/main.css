@@ -15,6 +15,9 @@
   --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --heading-font: "Nunito",  sans-serif;
   --nav-font: "Poppins",  sans-serif;
+  --header-height: 72px;
+  --safe-area-top: 0px;
+  --safe-area-bottom: 0px;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
@@ -40,6 +43,13 @@
 /* Smooth scroll */
 :root {
   scroll-behavior: smooth;
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  :root {
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /*--------------------------------------------------------------
@@ -281,14 +291,18 @@ h6 {
 
   .navmenu ul {
     display: none;
-    position: absolute;
-    inset: 70px 16px 20px 16px;
-    max-height: calc(100vh - 110px);
+    position: fixed;
+    top: calc(var(--header-height) + var(--safe-area-top) + 12px);
+    right: 16px;
+    bottom: calc(20px + var(--safe-area-bottom));
+    left: 16px;
     padding: 10px 0;
     margin: 0;
     border-radius: 6px;
     background-color: var(--nav-dropdown-background-color);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     transition: 0.3s;
     z-index: 9998;
     box-shadow: 0px 0px 30px color-mix(in srgb, var(--default-color), transparent 90%);
@@ -371,7 +385,7 @@ h6 {
     color: #fff;
     position: absolute;
     font-size: 32px;
-    top: 15px;
+    top: calc(15px + var(--safe-area-top));
     right: 15px;
     margin-right: 0;
     z-index: 9999;
@@ -382,6 +396,8 @@ h6 {
     overflow: hidden;
     inset: 0;
     background: rgba(33, 37, 41, 0.8);
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
     transition: 0.3s;
   }
 
@@ -769,7 +785,7 @@ section,
   color: var(--default-color);
   background-color: var(--background-color);
   padding: 60px 0;
-  scroll-margin-top: 98px;
+  scroll-margin-top: calc(var(--header-height) + 26px);
   overflow: clip;
 }
 
@@ -825,7 +841,7 @@ section,
 
   section,
   .section {
-    scroll-margin-top: 56px;
+    scroll-margin-top: calc(var(--header-height) + 12px);
   }
 }
 
@@ -1158,7 +1174,7 @@ section,
 }
 
 /* Stack hero layout for tablets & phones */
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
   .hero {
     padding: 110px 0 40px;
     text-align: center;
