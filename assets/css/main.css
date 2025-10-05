@@ -52,6 +52,18 @@
   }
 }
 
+@media (max-width: 991.98px) {
+  :root {
+    --header-height: 78px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    --header-height: 84px;
+  }
+}
+
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
@@ -89,6 +101,7 @@ h6 {
   color: var(--default-color);
   background: rgba(8, 16, 35, 0.85);
   padding: 20px 0;
+  min-height: var(--header-height);
   transition: all 0.5s;
   z-index: 997;
   backdrop-filter: blur(14px);
@@ -291,15 +304,15 @@ h6 {
 
   .navmenu ul {
     display: none;
-    position: fixed;
+    position: absolute;
     top: calc(var(--header-height) + var(--safe-area-top) + 12px);
     right: 16px;
-    bottom: calc(20px + var(--safe-area-bottom));
     left: 16px;
     padding: 10px 0;
     margin: 0;
     border-radius: 6px;
     background-color: var(--nav-dropdown-background-color);
+    max-height: calc(100vh - var(--header-height) - var(--safe-area-top) - var(--safe-area-bottom) - 44px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -899,7 +912,7 @@ section,
   width: 100%;
   min-height: 100vh;
   position: relative;
-  padding: 80px 0 60px 0;
+  padding: calc(var(--header-height) + 40px) 0 60px;
   display: flex;
   align-items: center;
   background: linear-gradient(180deg, rgba(11, 26, 59, 0.95) 0%, rgba(5, 12, 30, 0.95) 100%);
@@ -1174,9 +1187,9 @@ section,
 }
 
 /* Stack hero layout for tablets & phones */
-@media (max-width: 1199.98px) {
+@media (max-width: 991.98px) {
   .hero {
-    padding: 110px 0 40px;
+    padding: calc(var(--header-height) + 120px) 0 56px;
     text-align: center;
   }
 
@@ -1214,7 +1227,7 @@ section,
 
 @media (max-width: 640px) {
   .hero {
-    padding: 96px 0 36px;
+    padding: calc(var(--header-height) + 90px) 0 40px;
   }
 
   .hero p {
