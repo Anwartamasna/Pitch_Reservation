@@ -25,8 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['password'])) {
       $_SESSION['user_id'] = (int) $user['id'];
       $_SESSION['user_name'] = $user['name'];
+      $_SESSION['user_role'] = $user['role'] ?? 'user';
       setFlash('success', 'Welcome back, ' . $user['name'] . '!');
-      header('Location: pitches.php');
+      header('Location: ' . (($user['role'] ?? 'user') === 'admin' ? 'admin/dashboard.php' : 'pitches.php'));
       exit;
     } else {
       $errors[] = 'Invalid email or password.';

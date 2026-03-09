@@ -2,6 +2,9 @@
 session_start();
 require_once __DIR__ . '/../config/database.php';
 
+// Define base URL for absolute routing
+define('BASE_URL', '/');
+
 // CSRF token helpers
 function generateCSRF(): string
 {
@@ -43,6 +46,26 @@ function currentUserId(): ?int
 function currentUserName(): ?string
 {
   return $_SESSION['user_name'] ?? null;
+}
+
+function currentUserRole(): ?string
+{
+  return $_SESSION['user_role'] ?? null;
+}
+
+function isAdmin(): bool
+{
+  return currentUserRole() === 'admin';
+}
+
+function requireAdmin(): void
+{
+  requireLogin();
+  if (!isAdmin()) {
+    setFlash('danger', 'Access denied. Admin privileges required.');
+    header('Location: index.php');
+    exit;
+  }
 }
 
 // Flash message helpers

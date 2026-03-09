@@ -7,6 +7,7 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,3 +42,11 @@ INSERT INTO pitches (name, location, price_per_hour) VALUES
     ('Pitch B – City Arena',     'Hay Riad, Rabat',     120.00),
     ('Pitch C – Ocean Field',    'Corniche, Casablanca', 200.00),
     ('Pitch D – Atlas Ground',   'Guéliz, Marrakech',   180.00);
+
+-- =============================================
+-- Default admin account (password: admin123)
+-- Hash generated with PASSWORD_BCRYPT
+-- =============================================
+
+INSERT INTO users (name, email, password, role) VALUES
+    ('Admin', 'admin@pitchbook.com', '$2y$10$ygrpWOkJn3x8TSClauMGrOloJ7bp32lIanSQtbisF9YPVQla6IoCG', 'admin');
