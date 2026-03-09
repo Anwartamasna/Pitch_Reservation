@@ -25,7 +25,8 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
   <!-- Custom Styles -->
-  <link href="<?= BASE_URL ?>assets/css/style.css" rel="stylesheet">
+  <link href="<?= BASE_URL ?>assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>"
+    rel="stylesheet">
 </head>
 
 <body>
