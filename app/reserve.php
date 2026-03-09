@@ -22,6 +22,38 @@ if (!$pitch) {
 
 $timeSlots = generateTimeSlots();
 
+// Determine date to check availability
+$selected_date = $_GET['date'] ?? $_POST['reservation_date'] ?? date('Y-m-d');
+
+// Fetch reservations for the selected date
+$stmt = $db->prepare('SELECT start_time, end_time FROM reservations WHERE pitch_id = :pid AND reservation_date = :rdate');
+$stmt->execute([':pid' => $pitch_id, ':rdate' => $selected_date]);
+$existing_reservations = $stmt->fetchAll();
+
+// Helper to check if a specific time slot is booked
+function isSlotBooked(array $slot, array $reservations): bool
+{
+  // Both strings are 'HH:MM:SS' or 'HH:MM'
+  // E.g., slot start='10:00:00', end='11:00:00'
+  foreach ($reservations as $r) {
+    $rStart = substr($r['start_time'], 0, 5);
+    $rEnd = substr($r['end_time'], 0, 5);
+    if ($rEnd === '00:00')
+      $rEnd = '24:00';
+
+    $sStart = substr($slot['start'], 0, 5);
+    $sEnd = substr($slot['end'], 0, 5);
+    if ($sEnd === '00:00')
+      $sEnd = '24:00';
+
+    // Check for overlap: max(start1, start2) < min(end1, end2)
+    if ($sStart < $rEnd && $sEnd > $rStart) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Handle reservation submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!verifyCSRF($_POST['csrf_token'] ?? '')) {
@@ -155,6 +187,30 @@ require_once __DIR__ . '/includes/header.php';
             </div>
           </div>
 
+          <div class="availability-container">
+            <h5 class="mb-2"><i class="bi bi-clock-history me-2"></i>Availability for
+              <?= htmlspecialchars(date('D, M j, Y', strtotime($selected_date))) ?></h5>
+            <div class="availability-grid">
+              <?php foreach ($timeSlots as $slot): ?>
+                <?php
+                $booked = isSlotBooked($slot, $existing_reservations);
+                $timeStr = date('g:i A', strtotime($slot['start'])) . ' - ' . ($slot['end'] === '00:00' ? '12 AM' : date('g:i A', strtotime($slot['end'])));
+                ?>
+                <div class="slot-card <?= $booked ? 'slot-booked' : 'slot-free' ?>">
+                  <div class="slot-time"><?= $timeStr ?></div>
+                  <div class="slot-status">
+                    <?php if ($booked): ?>
+                      <i class="bi bi-x-circle-fill me-1"></i>Booked
+                    <?php else: ?>
+                      <i class="bi bi-check-circle-fill me-1"></i>Available
+                    <?php endif; ?>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+            <small class="d-block mt-2 text-muted fst-italic">* Select a date below to refresh availability.</small>
+          </div>
+
           <form method="POST" action="reserve.php" class="reserve-form">
             <?= csrfField() ?>
             <input type="hidden" name="pitch_id" value="<?= $pitch['id'] ?>">
@@ -163,7 +219,8 @@ require_once __DIR__ . '/includes/header.php';
               <label for="reservation_date" class="form-label fw-semibold"><i
                   class="bi bi-calendar-event me-1"></i>Date</label>
               <input type="date" class="form-control form-control-lg" id="reservation_date" name="reservation_date"
-                min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($reservation_date ?? date('Y-m-d')) ?>" required>
+                min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($selected_date) ?>" required
+                onchange="window.location.href = '?pitch_id=<?= $pitch['id'] ?>&date=' + this.value;">
             </div>
 
             <div class="row g-3 mb-4">
@@ -172,8 +229,10 @@ require_once __DIR__ . '/includes/header.php';
                 <select class="form-select form-select-lg" id="start_time" name="start_time" required>
                   <option value="">Select…</option>
                   <?php foreach ($timeSlots as $slot): ?>
-                    <option value="<?= $slot['start'] ?>" <?= (isset($start_time) && $start_time === $slot['start']) ? 'selected' : '' ?>>
-                      <?= date('g:i A', strtotime($slot['start'])) ?>
+                    <?php $booked = isSlotBooked($slot, $existing_reservations); ?>
+                    <option value="<?= $slot['start'] ?>" <?= $booked ? 'disabled class="text-danger"' : '' ?>
+                      <?= (isset($start_time) && $start_time === $slot['start']) ? 'selected' : '' ?>>
+                      <?= date('g:i A', strtotime($slot['start'])) ?>     <?= $booked ? '(Booked)' : '' ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
@@ -183,8 +242,11 @@ require_once __DIR__ . '/includes/header.php';
                 <select class="form-select form-select-lg" id="end_time" name="end_time" required>
                   <option value="">Select…</option>
                   <?php foreach ($timeSlots as $slot): ?>
-                    <option value="<?= $slot['end'] ?>" <?= (isset($end_time) && $end_time === $slot['end']) ? 'selected' : '' ?>>
+                    <?php $booked = isSlotBooked($slot, $existing_reservations); ?>
+                    <option value="<?= $slot['end'] ?>" <?= $booked ? 'disabled class="text-danger"' : '' ?>
+                      <?= (isset($end_time) && $end_time === $slot['end']) ? 'selected' : '' ?>>
                       <?= ($slot['end'] === '00:00') ? '12:00 AM' : date('g:i A', strtotime($slot['end'])) ?>
+                      <?= $booked ? '(Booked)' : '' ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
