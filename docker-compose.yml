@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  php-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pitch-php
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - pitch-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: pitch-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - pitch-net
+    depends_on:
+      - php-app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: pitch-postgres
+    environment:
+      POSTGRES_DB: pitch_db
+      POSTGRES_USER: pitch_user
+      POSTGRES_PASSWORD: pitch_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    networks:
+      - pitch-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pitch_user -d pitch_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  pitch-net:
+    driver: bridge
